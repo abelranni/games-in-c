@@ -1,5 +1,7 @@
 {
     "files.associations": {
         "allegro_audio.h": "c"
-    }
+    },
+    "markdown.preview.fontFamily": "'CaskaydiaCove Nerd Font Mono'",
+    "markdown.preview.fontSize": 14
 }
