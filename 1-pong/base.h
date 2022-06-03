@@ -1,6 +1,7 @@
 // Para compilar por comando usando gcc:
 // gcc pong.c -o pong.exe -lallegro -lallegro_font -lallegro_image -lallegro_primitives -lallegro_audio -lallegro_acodec
 
+
 void main_init();
 void main_destroy();
 void must_init(bool test, const char *description);

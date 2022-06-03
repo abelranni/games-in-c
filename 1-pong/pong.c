@@ -9,7 +9,6 @@
 
 #define SHIP_HEIGHT     10
 #define SHIP_WIDTH      25
-
 #define BALL_RADIUS      5
 
 void ball_draw(BOUNCER* ball);
@@ -17,15 +16,16 @@ void block_draw(float x, float y);
 void ship_draw(SHIP* ship_ptr);
 void ship_update(SHIP* ship_ptr);
 void ball_update(BOUNCER* ball_ptr);
+void keyboard_update(ALLEGRO_EVENT* event);
 
 float dx = 0;
+bool done = false;
+bool redraw = true;
+long frames = 0;
 
 int main()
 {
     main_init();
-
-    bool done = false;
-    bool redraw = true;
 
     BOUNCER ball;
     ball.pos.x = BUFFER_W/2;
@@ -44,27 +44,15 @@ int main()
     ship.height = SHIP_HEIGHT;
     SHIP* ship_ptr = &ship;
 
-
     while(1)
     {
         al_wait_for_event(queue, &event);
-
         switch(event.type)
         {
             case ALLEGRO_EVENT_TIMER:
-
                 ball_update(ball_ptr);
                 ship_update(ship_ptr);
-
                 test_ball_collision(ball_ptr, ship.pos.x, ship.pos.y);
-                    
-                if(key[ALLEGRO_KEY_ESCAPE])
-                    done = true;
-
-                for(int i = 0; i < ALLEGRO_KEY_MAX; i++) {
-                    key[i] &= KEY_SEEN;
-                }
-
                 redraw = true;
                 break;
 
@@ -72,38 +60,48 @@ int main()
                 ship.pos.dx += event.mouse.dx * 0.1;
                 al_set_mouse_xy(disp, BUFFER_W/2, BUFFER_W/2);
                 break;
-
-            case ALLEGRO_EVENT_KEY_DOWN:
-                key[event.keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
-                break;
-
-            case ALLEGRO_EVENT_KEY_UP:
-                key[event.keyboard.keycode] &= KEY_RELEASED;
-                break;
-
-            case ALLEGRO_EVENT_DISPLAY_CLOSE:
-                done = true;
-                break;
         }
 
-        if(done)
-            break;
+        if(done) break;
+        keyboard_update(&event);
 
         if(redraw && al_is_event_queue_empty(queue)) 
         {            
             disp_pre_draw();
             al_clear_to_color(al_map_rgb(0,0,0));
-
             ball_draw(ball_ptr);
             ship_draw(ship_ptr);
-
             disp_post_draw();
             redraw = false;
         }
     }
-
     main_destroy();
     return 0;
+}
+
+void keyboard_update(ALLEGRO_EVENT* event)
+{                   
+    switch(event->type)
+    {
+        case ALLEGRO_EVENT_TIMER:
+            if(key[ALLEGRO_KEY_ESCAPE])
+                done = true;
+            for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
+                key[i] &= KEY_SEEN;
+            break;
+
+        case ALLEGRO_EVENT_KEY_DOWN:
+            key[event->keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
+            break;
+
+        case ALLEGRO_EVENT_KEY_UP:
+            key[event->keyboard.keycode] &= KEY_RELEASED;
+            break;
+
+        case ALLEGRO_EVENT_DISPLAY_CLOSE:
+            done = true;
+            break;            
+    }
 }
 
 void ship_update(SHIP* ship_ptr){
