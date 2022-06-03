@@ -7,12 +7,18 @@
 #include <allegro5/allegro_acodec.h>
 #include "base.h"
 
-#define BLOCK_HEIGHT     10
-#define BLOCK_WIDTH      25
+#define SHIP_HEIGHT     10
+#define SHIP_WIDTH      25
+
 #define BALL_RADIUS      5
 
-void ball_draw(BOUNCER* b);
+void ball_draw(BOUNCER* ball);
 void block_draw(float x, float y);
+void ship_draw(SHIP* ship_ptr);
+void ship_update(SHIP* ship_ptr);
+void ball_update(BOUNCER* ball_ptr);
+
+float dx = 0;
 
 int main()
 {
@@ -20,11 +26,24 @@ int main()
 
     bool done = false;
     bool redraw = true;
-    float x = BUFFER_W/2;
-    float y = BUFFER_H-BLOCK_HEIGHT;
-    float dx = 0;
-    BOUNCER obj = { BUFFER_W/2, BUFFER_H/2, 2, 4, 0};
-    BOUNCER* b = &obj;
+
+    BOUNCER ball;
+    ball.pos.x = BUFFER_W/2;
+    ball.pos.y = BUFFER_H/2;
+    ball.pos.dx = 2;
+    ball.pos.dy = 4;
+    ball.radius = BALL_RADIUS;
+    BOUNCER* ball_ptr = &ball;
+
+    SHIP ship;
+    ship.pos.x = BUFFER_W/2;
+    ship.pos.y = BUFFER_H-SHIP_HEIGHT;
+    ship.pos.dx = SHIP_WIDTH/2;
+    ship.pos.dy = 0;
+    ship.width = SHIP_WIDTH;
+    ship.height = SHIP_HEIGHT;
+    SHIP* ship_ptr = &ship;
+
 
     while(1)
     {
@@ -34,31 +53,13 @@ int main()
         {
             case ALLEGRO_EVENT_TIMER:
 
-                update_ball_pos(b);
-                test_ball_collision(b, x, y);
-            
-                if(key[ALLEGRO_KEY_LEFT])
-                    x -= BLOCK_WIDTH/2;
-                if(key[ALLEGRO_KEY_RIGHT])
-                    x += BLOCK_WIDTH/2;
+                ball_update(ball_ptr);
+                ship_update(ship_ptr);
+
+                test_ball_collision(ball_ptr, ship.pos.x, ship.pos.y);
+                    
                 if(key[ALLEGRO_KEY_ESCAPE])
                     done = true;
-
-                x += dx;
-
-                if(x < 0) {
-                    x *= -1;
-                    dx *= -1;
-                    audio_play_shot();
-                }
-
-                if(x > BUFFER_W-BLOCK_WIDTH) {
-                    x -= (x - (BUFFER_W-BLOCK_WIDTH)) * 2;
-                    dx *= -1;
-                    audio_play_shot();
-                }
-
-                dx *= 0.9;
 
                 for(int i = 0; i < ALLEGRO_KEY_MAX; i++) {
                     key[i] &= KEY_SEEN;
@@ -68,7 +69,7 @@ int main()
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
-                dx += event.mouse.dx * 0.1;
+                ship.pos.dx += event.mouse.dx * 0.1;
                 al_set_mouse_xy(disp, BUFFER_W/2, BUFFER_W/2);
                 break;
 
@@ -93,8 +94,8 @@ int main()
             disp_pre_draw();
             al_clear_to_color(al_map_rgb(0,0,0));
 
-            ball_draw(b);
-            block_draw(x, y);
+            ball_draw(ball_ptr);
+            ship_draw(ship_ptr);
 
             disp_post_draw();
             redraw = false;
@@ -105,55 +106,85 @@ int main()
     return 0;
 }
 
+void ship_update(SHIP* ship_ptr){
 
+    if(key[ALLEGRO_KEY_LEFT])
+        ship_ptr->pos.x -= ship_ptr->pos.dx;
+    if(key[ALLEGRO_KEY_RIGHT])
+        ship_ptr->pos.x += ship_ptr->pos.dx;
 
+    if(ship_ptr->pos.x < 0) {
+        ship_ptr->pos.x *= -1;
+        dx *= -1;
+        audio_play_shot();
+    }
 
-void ball_draw(BOUNCER* b){
-    al_draw_filled_circle(b->x, b->y, BALL_RADIUS, al_map_rgb_f(1, 0, 1));
+    if(ship_ptr->pos.x > BUFFER_W-SHIP_WIDTH) {
+        ship_ptr->pos.x -= (ship_ptr->pos.x - (BUFFER_W-SHIP_WIDTH)) * 2;
+        dx *= -1;
+        audio_play_shot();
+    }
+
+    ship_ptr->pos.x += dx;
+    dx *= 0.9;
+
 }
-void block_draw(float x, float y){
-    al_draw_filled_rectangle(x, y, x + BLOCK_WIDTH, y + BLOCK_HEIGHT, al_map_rgb_f(1, 0, 1));
+
+
+void ball_draw(BOUNCER* ball_ptr){
+    al_draw_filled_circle(ball_ptr->pos.x, 
+                          ball_ptr->pos.y, 
+                          ball_ptr->radius, 
+                          al_map_rgb_f(1, 0, 1));
+}
+
+void ship_draw(SHIP* ship_ptr){
+    al_draw_filled_rectangle(ship_ptr->pos.x, 
+                             ship_ptr->pos.y, 
+                             ship_ptr->pos.x + ship_ptr->width, 
+                             ship_ptr->pos.y + ship_ptr->height,
+                             al_map_rgb_f(1, 0, 1));
 }
 
 
 // --- Movimientos y Colisiones ---------------------------------------------------
 //
-void update_ball_pos(BOUNCER* b)
+void ball_update(BOUNCER* ball_ptr)
 {
-    b->x += b->dx;
-    b->y += b->dy;
+    ball_ptr->pos.x += ball_ptr->pos.dx;
+    ball_ptr->pos.y += ball_ptr->pos.dy;
 }
 
-void test_ball_collision(BOUNCER* b, float x, float y)
+void test_ball_collision(BOUNCER* ball_ptr, float x, float y)
 {
-    if(b->x < 0)
+    if(ball_ptr->pos.x < 0)
     {
-        b->x  *= -1;
-        b->dx *= -1;
+        ball_ptr->pos.x  *= -1;
+        ball_ptr->pos.dx *= -1;
         audio_play_shot();
     }
-    if(b->x > BUFFER_W-(BALL_RADIUS*2))
+    if(ball_ptr->pos.x > BUFFER_W-(BALL_RADIUS*2))
     {
-        b->x -= (b->x - (BUFFER_W-(BALL_RADIUS*2)));
-        b->dx *= -1;
+        ball_ptr->pos.x -= (ball_ptr->pos.x - (BUFFER_W-(BALL_RADIUS*2)));
+        ball_ptr->pos.dx *= -1;
         audio_play_shot();
     }
-    if(b->y < 0)
+    if(ball_ptr->pos.y < 0)
     {
-        b->y  *= -1;
-        b->dy *= -1;
+        ball_ptr->pos.y  *= -1;
+        ball_ptr->pos.dy *= -1;
         audio_play_shot();
     }
-    if(b->y > BUFFER_H-(BALL_RADIUS*2))
+    if(ball_ptr->pos.y > BUFFER_H-(BALL_RADIUS*2))
     {
-        if (check_collision(b->x, b->y, x, y)) {
+        if (check_collision(ball_ptr->pos.x, ball_ptr->pos.y, x, y)) {
             audio_play_shot();
         }
         else {
             audio_play_explode(0);                    
         }
-            b->x -= (b->y - (BUFFER_H-(BALL_RADIUS*2)));
-            b->dy *= -1;
+            ball_ptr->pos.x -= (ball_ptr->pos.y - (BUFFER_H-(BALL_RADIUS*2)));
+            ball_ptr->pos.dy *= -1;
     }                
 }
 

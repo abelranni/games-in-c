@@ -29,17 +29,28 @@ ALLEGRO_EVENT_QUEUE*    queue;
 ALLEGRO_EVENT           event;
 unsigned char           key[ALLEGRO_KEY_MAX];
 
-typedef struct BOUNCER
+typedef struct POSITION
 {
     float x, y;
     float dx, dy;
-    int type;
+} POSITION;
+
+typedef struct BOUNCER
+{
+    POSITION pos;
+    int radius;
 } BOUNCER;
+
+typedef struct SHIP
+{
+    POSITION pos;
+    int width;
+    int height;
+} SHIP;
 
 void update_ball_pos(BOUNCER* b);
 void test_ball_collision(BOUNCER* b, float x, float y);
 int check_collision(float bx, float by, float x, float y);
-
 
 
 // --- Inicializacion y configuración general ---------------------------------------------------
