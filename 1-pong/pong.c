@@ -18,6 +18,9 @@ void ship_update(SHIP* ship_ptr);
 void ball_update(BOUNCER* ball_ptr);
 void keyboard_update(ALLEGRO_EVENT* event);
 void brick_draw(SHIP* brick_ptr);
+void check_all_bricks(BOUNCER* ball_ptr, SHIP* brick_ptr);
+int check_brick_collision(BOUNCER* ball_ptr, SHIP* brick_ptr);
+
 
 float dx = 0;
 bool done = false;
@@ -39,7 +42,7 @@ int main()
     SHIP ship;
     ship.pos.x = BUFFER_W/2;
     ship.pos.y = BUFFER_H-SHIP_HEIGHT;
-    ship.pos.dx = SHIP_WIDTH/2;
+    ship.pos.dx = SHIP_WIDTH/3;
     ship.pos.dy = 0;
     ship.width = SHIP_WIDTH;
     ship.height = SHIP_HEIGHT;
@@ -54,6 +57,7 @@ int main()
         brick[i].pos.dy = 0;
         brick[i].width = BUFFER_W/12;
         brick[i].height = BUFFER_H/10;
+        brick[i].enabled = true;
     }
     SHIP* brick_ptr = brick;
 
@@ -67,11 +71,12 @@ int main()
                 ball_update(ball_ptr);
                 ship_update(ship_ptr);
                 test_ball_collision(ball_ptr, ship.pos.x, ship.pos.y);
+                check_all_bricks(ball_ptr, brick_ptr);
                 redraw = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
-                ship.pos.dx += event.mouse.dx * 0.1;
+                dx += event.mouse.dx * 0.1;
                 al_set_mouse_xy(disp, BUFFER_W/2, BUFFER_W/2);
                 break;
         }
@@ -98,13 +103,14 @@ void brick_draw(SHIP* brick_ptr)
 {
     for(int i = 0; i < 10; i++)
     {
-
-    al_draw_filled_rectangle(brick_ptr[i].pos.x, 
-                             brick_ptr[i].pos.y, 
-                             brick_ptr[i].pos.x + brick_ptr[i].width, 
-                             brick_ptr[i].pos.y + brick_ptr[i].height,
-                             al_map_rgb_f(0, 1, 0));
-
+        if (brick_ptr[i].enabled)
+        {
+            al_draw_filled_rectangle(brick_ptr[i].pos.x, 
+                                    brick_ptr[i].pos.y, 
+                                    brick_ptr[i].pos.x + brick_ptr[i].width, 
+                                    brick_ptr[i].pos.y + brick_ptr[i].height,
+                                    al_map_rgb_f(0, 1, 0));
+        }
     }
 }
 
@@ -156,7 +162,6 @@ void ship_update(SHIP* ship_ptr){
     dx *= 0.9;
 
 }
-
 
 void ball_draw(BOUNCER* ball_ptr){
     al_draw_filled_circle(ball_ptr->pos.x, 
@@ -217,6 +222,31 @@ void test_ball_collision(BOUNCER* ball_ptr, float x, float y)
 
 int check_collision(float bx, float by, float x, float y){
     if(bx > x && bx < x + 100 && by > y && by < y + 50){
+        return 1;
+    }
+    return 0;
+}
+
+void check_all_bricks(BOUNCER* ball_ptr, SHIP* brick_ptr){
+
+    for (int i = 0; i < 10; i++)
+    {
+        if (brick_ptr[i].enabled)
+        {
+            if (check_brick_collision(ball_ptr, &(brick_ptr[i])))
+            {
+                brick_ptr[i].enabled = false;
+            }
+        }
+    }
+
+}
+
+
+int check_brick_collision(BOUNCER* ball_ptr, SHIP* brick_ptr){
+    if(ball_ptr->pos.x > brick_ptr->pos.x && 
+        ball_ptr->pos.x < brick_ptr->pos.x + brick_ptr->width && 
+        ball_ptr->pos.y < brick_ptr->pos.y + brick_ptr->height){
         return 1;
     }
     return 0;

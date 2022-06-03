@@ -47,6 +47,7 @@ typedef struct SHIP
     POSITION pos;
     int width;
     int height;
+    int enabled;
 } SHIP;
 
 void update_ball_pos(BOUNCER* b);
