@@ -96,7 +96,7 @@ void main_init() {
 
     memset(key, 0, sizeof(key));
 
-    al_grab_mouse(disp);
+    // al_grab_mouse(disp);
     al_start_timer(timer);
 
 }
