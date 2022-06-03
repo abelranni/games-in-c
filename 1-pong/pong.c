@@ -5,7 +5,14 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
-#include "base_defines.h"
+#include "base.h"
+
+#define BLOCK_HEIGHT     10
+#define BLOCK_WIDTH      25
+#define BALL_RADIUS      5
+
+void ball_draw(BOUNCER* b);
+void block_draw(float x, float y);
 
 int main()
 {
@@ -13,10 +20,10 @@ int main()
 
     bool done = false;
     bool redraw = true;
-    float x = 100;
-    float y = 450;
+    float x = BUFFER_W/2;
+    float y = BUFFER_H-BLOCK_HEIGHT;
     float dx = 0;
-    BOUNCER obj = { 320, 240, 3, 9, 0};
+    BOUNCER obj = { BUFFER_W/2, BUFFER_H/2, 2, 4, 0};
     BOUNCER* b = &obj;
 
     while(1)
@@ -31,9 +38,9 @@ int main()
                 test_ball_collision(b, x, y);
             
                 if(key[ALLEGRO_KEY_LEFT])
-                    x -= 30;
+                    x -= BLOCK_WIDTH/2;
                 if(key[ALLEGRO_KEY_RIGHT])
-                    x += 30;
+                    x += BLOCK_WIDTH/2;
                 if(key[ALLEGRO_KEY_ESCAPE])
                     done = true;
 
@@ -45,8 +52,8 @@ int main()
                     audio_play_shot();
                 }
 
-                if(x > 540) {
-                    x -= (x - 540) * 2;
+                if(x > BUFFER_W-BLOCK_WIDTH) {
+                    x -= (x - (BUFFER_W-BLOCK_WIDTH)) * 2;
                     dx *= -1;
                     audio_play_shot();
                 }
@@ -62,7 +69,7 @@ int main()
 
             case ALLEGRO_EVENT_MOUSE_AXES:
                 dx += event.mouse.dx * 0.1;
-                al_set_mouse_xy(disp, 320, 240);
+                al_set_mouse_xy(disp, BUFFER_W/2, BUFFER_W/2);
                 break;
 
             case ALLEGRO_EVENT_KEY_DOWN:
@@ -83,11 +90,13 @@ int main()
 
         if(redraw && al_is_event_queue_empty(queue)) 
         {            
-            al_clear_to_color(al_map_rgb(0, 0, 0));
-            // al_draw_textf(font, al_map_rgb(255, 255, 255), 0, 0, 0, "X: %.1f Y: %.1f", x, y);
-            al_draw_filled_rectangle(x, y, x + 100, y + 50, al_map_rgb(255, 0, 0));
-            al_draw_circle(b->x, b->y, 20, al_map_rgb_f(1, 0, 1), 2);
-            al_flip_display();
+            disp_pre_draw();
+            al_clear_to_color(al_map_rgb(0,0,0));
+
+            ball_draw(b);
+            block_draw(x, y);
+
+            disp_post_draw();
             redraw = false;
         }
     }
@@ -95,6 +104,17 @@ int main()
     main_destroy();
     return 0;
 }
+
+
+
+
+void ball_draw(BOUNCER* b){
+    al_draw_filled_circle(b->x, b->y, BALL_RADIUS, al_map_rgb_f(1, 0, 1));
+}
+void block_draw(float x, float y){
+    al_draw_filled_rectangle(x, y, x + BLOCK_WIDTH, y + BLOCK_HEIGHT, al_map_rgb_f(1, 0, 1));
+}
+
 
 // --- Movimientos y Colisiones ---------------------------------------------------
 //
@@ -112,9 +132,9 @@ void test_ball_collision(BOUNCER* b, float x, float y)
         b->dx *= -1;
         audio_play_shot();
     }
-    if(b->x > 640)
+    if(b->x > BUFFER_W-(BALL_RADIUS*2))
     {
-        b->x -= (b->x - 640);
+        b->x -= (b->x - (BUFFER_W-(BALL_RADIUS*2)));
         b->dx *= -1;
         audio_play_shot();
     }
@@ -124,16 +144,16 @@ void test_ball_collision(BOUNCER* b, float x, float y)
         b->dy *= -1;
         audio_play_shot();
     }
-    if(b->y > 450)                
+    if(b->y > BUFFER_H-(BALL_RADIUS*2))
     {
         if (check_collision(b->x, b->y, x, y)) {
-            audio_play_explode(0);                    
-        }
-        else {
             audio_play_shot();
         }
-        b->x -= (b->y - 480);
-        b->dy *= -1;
+        else {
+            audio_play_explode(0);                    
+        }
+            b->x -= (b->y - (BUFFER_H-(BALL_RADIUS*2)));
+            b->dy *= -1;
     }                
 }
 

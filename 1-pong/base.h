@@ -8,12 +8,22 @@ void audio_init();
 void audio_deinit();
 void audio_play_shot();
 void audio_play_explode(int idx);
+void disp_init();
+void disp_deinit();
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
 
+#define BUFFER_W 320
+#define BUFFER_H 240
+
+#define DISP_SCALE 2
+#define DISP_W (BUFFER_W * DISP_SCALE)
+#define DISP_H (BUFFER_H * DISP_SCALE)
+
 ALLEGRO_TIMER*          timer;
 ALLEGRO_DISPLAY*        disp;
+ALLEGRO_BITMAP*         buffer;
 ALLEGRO_FONT*           font;
 ALLEGRO_EVENT_QUEUE*    queue;
 ALLEGRO_EVENT           event;
@@ -53,12 +63,7 @@ void main_init() {
     queue = al_create_event_queue();
     must_init(queue, "queue");
 
-    al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
-    al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
-    al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
-
-    disp = al_create_display(640, 480);
-    must_init(disp, "display");
+    disp_init();
 
     font = al_create_builtin_font();
     must_init(font, "font");
@@ -86,9 +91,9 @@ void main_init() {
 
 void main_destroy(){
     al_destroy_font(font);
-    al_destroy_display(disp);
     al_destroy_timer(timer);
     al_destroy_event_queue(queue);
+    disp_deinit();
     audio_deinit();
 }
 
@@ -104,12 +109,12 @@ void audio_init()
     al_init_acodec_addon();
     al_reserve_samples(128);
 
-    sample_shot = al_load_sample("audio_shot.flac");
+    sample_shot = al_load_sample(".\\assets\\audio_shot.flac");
     must_init(sample_shot, "shot sample");
 
-    sample_explode[0] = al_load_sample("audio_explode1.flac");
+    sample_explode[0] = al_load_sample(".\\assets\\audio_explode1.flac");
     must_init(sample_explode[0], "explode[0] sample");
-    sample_explode[1] = al_load_sample("audio_explode2.flac");
+    sample_explode[1] = al_load_sample(".\\assets\\audio_explode2.flac");
     must_init(sample_explode[1], "explode[1] sample");
 }
 
@@ -128,4 +133,38 @@ void audio_play_shot()
 void audio_play_explode(int idx)
 {
     al_play_sample(sample_explode[idx], 0.2, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+}
+
+
+// --- Inicializacion y configuración de display ---------------------------------------------------
+// 
+void disp_init()
+{
+    al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
+    al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
+
+    disp = al_create_display(DISP_W, DISP_H);
+    must_init(disp, "display");
+
+    buffer = al_create_bitmap(BUFFER_W, BUFFER_H);
+    must_init(buffer, "bitmap buffer");
+}
+
+void disp_deinit()
+{
+    al_destroy_bitmap(buffer);
+    al_destroy_display(disp);
+}
+
+void disp_pre_draw()
+{
+    al_set_target_bitmap(buffer);
+}
+
+void disp_post_draw()
+{
+    al_set_target_backbuffer(disp);
+    al_draw_scaled_bitmap(buffer, 0, 0, BUFFER_W, BUFFER_H, 0, 0, DISP_W, DISP_H, 0);
+
+    al_flip_display();
 }
