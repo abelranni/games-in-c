@@ -521,7 +521,7 @@ void ship_init()
     ship.x = (BUFFER_W / 2) - (SHIP_W / 2);
     ship.y = (BUFFER_H / 2) - (SHIP_H / 2);
     ship.shot_timer = 0;
-    ship.lives = 3;
+    ship.lives = 0;
     ship.respawn_timer = 0;
     ship.invincible_timer = 120;
 }

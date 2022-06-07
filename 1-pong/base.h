@@ -1,7 +1,18 @@
-// Para compilar por comando usando gcc:
-// gcc pong.c -o pong.exe -lallegro -lallegro_font -lallegro_image -lallegro_primitives -lallegro_audio -lallegro_acodec
+#include <stdio.h>
+#include <stdlib.h>
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
+#include <allegro5/allegro_image.h>
 
+#include "defines.h"
+#include "types.h"
+#include "pong.h"
 
+//--- Prototipos de Funciones -----------------------------------------------------------
+//
 void main_init();
 void main_destroy();
 void must_init(bool test, const char *description);
@@ -12,16 +23,8 @@ void audio_play_explode(int idx);
 void disp_init();
 void disp_deinit();
 
-#define KEY_SEEN     1
-#define KEY_RELEASED 2
-
-#define BUFFER_W 320
-#define BUFFER_H 240
-
-#define DISP_SCALE 2
-#define DISP_W (BUFFER_W * DISP_SCALE)
-#define DISP_H (BUFFER_H * DISP_SCALE)
-
+//--- Variables Globales -----------------------------------------------------------
+//
 ALLEGRO_TIMER*          timer;
 ALLEGRO_DISPLAY*        disp;
 ALLEGRO_BITMAP*         buffer;
@@ -29,30 +32,7 @@ ALLEGRO_FONT*           font;
 ALLEGRO_EVENT_QUEUE*    queue;
 ALLEGRO_EVENT           event;
 unsigned char           key[ALLEGRO_KEY_MAX];
-
-typedef struct POSITION
-{
-    float x, y;
-    float dx, dy;
-} POSITION;
-
-typedef struct BOUNCER
-{
-    POSITION pos;
-    int radius;
-} BOUNCER;
-
-typedef struct SHIP
-{
-    POSITION pos;
-    int width;
-    int height;
-    int enabled;
-} SHIP;
-
-void update_ball_pos(BOUNCER* b);
-void test_ball_collision(BOUNCER* b, float x, float y);
-int check_collision(float bx, float by, float x, float y);
+#include "sprites.h"
 
 
 // --- Inicializacion y configuración general ---------------------------------------------------
@@ -100,6 +80,9 @@ void main_init() {
     // al_grab_mouse(disp);
     al_start_timer(timer);
 
+    must_init(al_init_image_addon(), "image");
+    sprites_init();    
+
 }
 
 void main_destroy(){
@@ -108,6 +91,7 @@ void main_destroy(){
     al_destroy_event_queue(queue);
     disp_deinit();
     audio_deinit();
+    sprites_deinit();
 }
 
 
@@ -181,3 +165,7 @@ void disp_post_draw()
 
     al_flip_display();
 }
+
+#include "init.h"
+#include "render.h"
+#include "logic.h"
