@@ -14,13 +14,7 @@ void brick_draw(SHIP *brick_ptr);
 //
 void ship_draw(SHIP *ship_ptr)
 {
-    // al_draw_filled_rectangle(ship_ptr->pos.x,
-    //                          ship_ptr->pos.y,
-    //                          ship_ptr->pos.x + ship_ptr->width,
-    //                          ship_ptr->pos.y + ship_ptr->height,
-    //                          al_map_rgb_f(1, 0, 1));
     al_draw_bitmap(sprites.ship_img, ship_ptr->pos.x, ship_ptr->pos.y, 0);
-
 }
 
 void ship_update(SHIP *ship_ptr)
@@ -53,11 +47,7 @@ void ship_update(SHIP *ship_ptr)
 // --- Ball ---------------------------------------------
 //
 void ball_draw(BOUNCER *ball_ptr)
-{
-    // al_draw_filled_circle(ball_ptr->pos.x,
-    //                       ball_ptr->pos.y,
-    //                       ball_ptr->radius,
-    //                       al_map_rgb_f(1, 0, 1));                          
+{                  
     al_draw_bitmap(sprites.ball_img, ball_ptr->pos.x, ball_ptr->pos.y, 0);
 }
 
@@ -71,17 +61,11 @@ void ball_update(BOUNCER *ball_ptr)
 //
 void brick_draw(SHIP *brick_ptr)
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < BRICKS_IN_ROW; i++)
     {
         if (brick_ptr[i].enabled)
         {
-            // al_draw_filled_rectangle(brick_ptr[i].pos.x,
-            //                          brick_ptr[i].pos.y,
-            //                          brick_ptr[i].pos.x + brick_ptr[i].width,
-            //                          brick_ptr[i].pos.y + brick_ptr[i].height,
-            //                          al_map_rgb_f(0, 1, 0));
-
-            al_draw_bitmap(sprites.bricks_img[i%2], brick_ptr[i].pos.x, brick_ptr[i].pos.y, 0);
+            al_draw_bitmap(sprites.bricks_img[i%4], brick_ptr[i].pos.x, brick_ptr[i].pos.y, 0);
 
         }
     }

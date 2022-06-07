@@ -7,8 +7,8 @@ void initialize_objects()
 
     ball.pos.x = BUFFER_W / 2;
     ball.pos.y = BUFFER_H / 2;
-    ball.pos.dx = -2;
-    ball.pos.dy = -4;
+    ball.pos.dx = BALL_SPEED;
+    ball.pos.dy = BALL_SPEED * 2;
     ball.radius = BALL_RADIUS;
 
     ship.pos.x = BUFFER_W / 2;
@@ -18,7 +18,7 @@ void initialize_objects()
     ship.width = SHIP_WIDTH;
     ship.height = SHIP_HEIGHT;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < BRICKS_IN_ROW; i++)
     {
         brick[i].pos.x = i * (BUFFER_W / BRICKS_IN_ROW);
         brick[i].pos.y = 0;

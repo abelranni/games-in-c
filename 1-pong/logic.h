@@ -4,6 +4,9 @@ int check_collision(float bx, float by, float x, float y);
 void check_all_bricks(BOUNCER *ball_ptr, SHIP *brick_ptr);
 int check_brick_collision(BOUNCER *ball_ptr, SHIP *brick_ptr);
 
+int between(int lo, int hi);
+float between_f(float lo, float hi);
+
 // --- Lógica de detección de colisiones ------------------------------------------
 //
 void test_ball_collision(BOUNCER *ball_ptr, float x, float y)
@@ -52,7 +55,6 @@ int check_collision(float bx, float by, float x, float y)
 
 void check_all_bricks(BOUNCER *ball_ptr, SHIP *brick_ptr)
 {
-
     for (int i = 0; i < 10; i++)
     {
         if (brick_ptr[i].enabled)
@@ -74,4 +76,17 @@ int check_brick_collision(BOUNCER *ball_ptr, SHIP *brick_ptr)
         return 1;
     }
     return 0;
+}
+
+
+// --- Funciones auxiliares de cálculo ------------------------------
+//
+int between(int lo, int hi)
+{
+    return lo + (rand() % (hi - lo));
+}
+
+float between_f(float lo, float hi)
+{
+    return lo + ((float)rand() / (float)RAND_MAX) * (hi - lo);
 }
