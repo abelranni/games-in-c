@@ -6,6 +6,8 @@ void ball_update(BOUNCER *ball_ptr);
 void ball_draw(BOUNCER *ball);
 
 void brick_draw(SHIP *brick_ptr);
+void game_update(BOUNCER *ball_ptr, SHIP *ship_ptr);
+
 
 // --- Update y Render de Objetos ---------------------------------------------------
 //
@@ -14,34 +16,48 @@ void brick_draw(SHIP *brick_ptr);
 //
 void ship_draw(SHIP *ship_ptr)
 {
+    if(ship.lives < 0)
+        return;    
     al_draw_bitmap(sprites.ship_img, ship_ptr->pos.x, ship_ptr->pos.y, 0);
 }
 
 void ship_update(SHIP *ship_ptr)
 {
 
-    if (key[ALLEGRO_KEY_LEFT])
-        ship_ptr->pos.x -= ship_ptr->pos.dx;
+    if(ship_ptr->lives < 0)
+        return;
+
+    if (key[ALLEGRO_KEY_LEFT]) {
+        ship_ptr->vx = (-1)*ship_ptr->pos.dx;
+    }
         
-    if (key[ALLEGRO_KEY_RIGHT])
-        ship_ptr->pos.x += ship_ptr->pos.dx;
+    if (key[ALLEGRO_KEY_RIGHT]) {
+        ship_ptr->vx = ship_ptr->pos.dx;
+    }
+
+    if (key[ALLEGRO_KEY_UP]) {
+        ship_ptr->pos.dx *= 1.1;
+    }
+    if (key[ALLEGRO_KEY_DOWN]) {
+        ship_ptr->pos.dx *= 0.9;
+    }
 
     if (ship_ptr->pos.x < 0)
     {
-        ship_ptr->pos.x *= -1;
-        dx *= -1;
+        ship_ptr->pos.x *= (-1);
+        ship_ptr->vx = ship_ptr->pos.dx;
         audio_play_shot();
     }
 
     if (ship_ptr->pos.x > BUFFER_W - SHIP_WIDTH)
     {
         ship_ptr->pos.x -= (ship_ptr->pos.x - (BUFFER_W - SHIP_WIDTH)) * 2;
-        dx *= -1;
+        ship_ptr->vx = (-1)*ship_ptr->pos.dx;
         audio_play_shot();
     }
 
-    ship_ptr->pos.x += dx;
-    dx *= 0.9;
+    ship_ptr->pos.x += ship_ptr->vx;
+    ship_ptr->vx *= 0.8;
 }
 
 // --- Ball ---------------------------------------------
@@ -53,8 +69,8 @@ void ball_draw(BOUNCER *ball_ptr)
 
 void ball_update(BOUNCER *ball_ptr)
 {
-    ball_ptr->pos.x += ball_ptr->pos.dx;
-    ball_ptr->pos.y += ball_ptr->pos.dy;
+    ball_ptr->pos.x += ball_ptr->vx;
+    ball_ptr->pos.y += ball_ptr->vy;
 }
 
 // --- Bricks ---------------------------------------------
@@ -69,4 +85,25 @@ void brick_draw(SHIP *brick_ptr)
 
         }
     }
+}
+
+
+// --- Game ----------------------------------------------
+//
+void game_update(BOUNCER *ball_ptr, SHIP *ship_ptr) 
+{
+    if(ship_ptr->lives < 0) {
+
+        al_draw_text(
+            font,
+            al_map_rgb_f(1,1,1),
+            BUFFER_W / 2, BUFFER_H / 2,
+            ALLEGRO_ALIGN_CENTER,
+            "G A M E  O V E R"
+        );
+
+        ball_ptr->vx = 0;
+        ball_ptr->vy = 0;        
+    }
+
 }

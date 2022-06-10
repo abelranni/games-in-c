@@ -13,11 +13,14 @@ int main()
         switch (event.type)
         {
         case ALLEGRO_EVENT_TIMER:
-            ball_update(ball_ptr);
-            ship_update(ship_ptr);
-            test_ball_collision(ball_ptr, ship.pos.x, ship.pos.y);
-            check_all_bricks(ball_ptr, brick_ptr);
+            if (frames > 30){
+                ball_update(ball_ptr);
+                ship_update(ship_ptr);
+                test_ball_collision(ball_ptr, ship_ptr);
+                check_all_bricks(ball_ptr, brick_ptr);
+            }
             redraw = true;
+            frames++;
             break;
 
         case ALLEGRO_EVENT_MOUSE_AXES:
@@ -37,6 +40,7 @@ int main()
             ball_draw(ball_ptr);
             ship_draw(ship_ptr);
             brick_draw(brick_ptr);
+            game_update(ball_ptr, ship_ptr);
             disp_post_draw();
             redraw = false;
         }

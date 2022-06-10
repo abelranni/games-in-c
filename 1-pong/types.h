@@ -8,13 +8,16 @@ typedef struct POSITION
 typedef struct BOUNCER
 {
     POSITION pos;
+    float vx, vy;
     int radius;
 } BOUNCER;
 
 typedef struct SHIP
 {
     POSITION pos;
+    float vx, vy;
     int width;
     int height;
     int enabled;
+    int lives;
 } SHIP;

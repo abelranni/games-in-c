@@ -13,3 +13,5 @@ float dx = 0;
 bool done = false;
 bool redraw = true;
 long frames = 0;
+long lives = 3;
+

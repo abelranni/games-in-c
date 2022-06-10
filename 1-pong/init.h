@@ -9,14 +9,19 @@ void initialize_objects()
     ball.pos.y = BUFFER_H / 2;
     ball.pos.dx = BALL_SPEED;
     ball.pos.dy = BALL_SPEED * 2;
+    ball.vx = ball.pos.dx;
+    ball.vy = ball.pos.dy;
     ball.radius = BALL_RADIUS;
 
     ship.pos.x = BUFFER_W / 2;
     ship.pos.y = BUFFER_H - SHIP_HEIGHT;
-    ship.pos.dx = SHIP_WIDTH / 3;
+    ship.pos.dx = SHIP_WIDTH / 10;
     ship.pos.dy = 0;
+    ship.vx = 0;
+    ship.vy = 0;
     ship.width = SHIP_WIDTH;
     ship.height = SHIP_HEIGHT;
+    ship.lives = lives;
 
     for (int i = 0; i < BRICKS_IN_ROW; i++)
     {
