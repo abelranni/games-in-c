@@ -8,6 +8,8 @@ void ball_draw(BOUNCER *ball);
 void brick_draw(SHIP *brick_ptr);
 void game_update(BOUNCER *ball_ptr, SHIP *ship_ptr);
 
+void shots_update(BOUNCER *shots_ptr, SHIP *ship_ptr);
+void shots_draw(BOUNCER *shots_ptr);
 
 // --- Update y Render de Objetos ---------------------------------------------------
 //
@@ -64,7 +66,7 @@ void ship_update(SHIP *ship_ptr)
 //
 void ball_draw(BOUNCER *ball_ptr)
 {                  
-    al_draw_bitmap(sprites.ball_img, ball_ptr->pos.x, ball_ptr->pos.y, 0);
+    al_draw_bitmap(sprites.ball_img[0], ball_ptr->pos.x, ball_ptr->pos.y, 0);
 }
 
 void ball_update(BOUNCER *ball_ptr)
@@ -86,7 +88,51 @@ void brick_draw(SHIP *brick_ptr)
         }
     }
 }
+// --- Shots ---------------------------------------------
+//
+void shots_update(BOUNCER *shots_ptr, SHIP *ship_ptr)
+{
+    for (int i = 0; i < 10; i++)
+    {
+        if (shots_ptr[i].enabled)
+        {
+            shots_ptr[i].pos.y += shots_ptr[i].vy;
+            if (shots_ptr[i].pos.y < BALL_D)
+            {
+                shots_ptr[i].enabled = false;
+            }
+        }
+    }    
 
+    if (key[ALLEGRO_KEY_SPACE]) {
+
+        for (int i = 0; i < 10; i++)
+        {
+            if (!shots_ptr[i].enabled)
+            {
+                shots_ptr[i].pos.x = ship_ptr->pos.x + SHIP_WIDTH / 2;
+                shots_ptr[i].pos.y = (BUFFER_H - BALL_D - BRICK_H);
+                shots_ptr[i].pos.dx = 0;
+                shots_ptr[i].vy = -5;
+                shots_ptr[i].enabled = true;
+                return;
+            }
+        }
+    }
+
+
+}
+
+void shots_draw(BOUNCER *shots_ptr)
+{
+   for (int i = 0; i < 10; i++)
+    {
+        if (shots_ptr[i].enabled)
+        {
+            al_draw_bitmap(sprites.ball_img[1], shots_ptr[i].pos.x, shots_ptr[i].pos.y, 0);
+        }
+    }    
+}
 
 // --- Game ----------------------------------------------
 //

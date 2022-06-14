@@ -33,6 +33,16 @@ void initialize_objects()
         brick[i].height = BRICK_H;
         brick[i].enabled = true;
     }
+
+    for (int i = 0; i < 10; i++)
+    {
+        shots[i].pos.x = 0;
+        shots[i].pos.y = (SHIP_HEIGHT + BALL_D);
+        shots[i].pos.dx = 0;
+        shots[i].pos.dy = -3;
+        shots[i].enabled = false;
+    }
+
 }
 
 void keyboard_update(ALLEGRO_EVENT *event)
@@ -47,11 +57,21 @@ void keyboard_update(ALLEGRO_EVENT *event)
         break;
 
     case ALLEGRO_EVENT_KEY_DOWN:
-        key[event->keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
+        if (event->keyboard.keycode == ALLEGRO_KEY_SPACE){
+            key[event->keyboard.keycode] = 0;
+        }
+        else {
+            key[event->keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
+        }
         break;
 
     case ALLEGRO_EVENT_KEY_UP:
-        key[event->keyboard.keycode] &= KEY_RELEASED;
+        if (event->keyboard.keycode == ALLEGRO_KEY_SPACE){
+            key[event->keyboard.keycode] = KEY_RELEASED;
+        }
+        else {
+            key[event->keyboard.keycode] &= KEY_RELEASED;
+        }    
         break;
 
     case ALLEGRO_EVENT_DISPLAY_CLOSE:

@@ -9,6 +9,7 @@ typedef struct BOUNCER
 {
     POSITION pos;
     float vx, vy;
+    int enabled;
     int radius;
 } BOUNCER;
 

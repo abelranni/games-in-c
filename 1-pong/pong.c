@@ -16,6 +16,7 @@ int main()
             if (frames > 30){
                 ball_update(ball_ptr);
                 ship_update(ship_ptr);
+                shots_update(shots_ptr, ship_ptr);
                 test_ball_collision(ball_ptr, ship_ptr);
                 check_all_bricks(ball_ptr, brick_ptr);
             }
@@ -29,8 +30,8 @@ int main()
             break;
         }
 
-        if (done)
-            break;
+        if (done) break;
+        
         keyboard_update(&event);
 
         if (redraw && al_is_event_queue_empty(queue))
@@ -40,6 +41,7 @@ int main()
             ball_draw(ball_ptr);
             ship_draw(ship_ptr);
             brick_draw(brick_ptr);
+            shots_draw(shots_ptr);
             game_update(ball_ptr, ship_ptr);
             disp_post_draw();
             redraw = false;
