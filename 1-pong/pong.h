@@ -6,8 +6,8 @@ BOUNCER *ball_ptr = &ball;
 SHIP ship;
 SHIP *ship_ptr = &ship;
 
-SHIP brick[BRICKS_IN_ROW];
-SHIP *brick_ptr = brick;
+SHIP brick[BRICKS_ROWS][BRICKS_IN_ROW];
+SHIP *brick_ptr = brick[0];
 
 BOUNCER shots[10];
 BOUNCER *shots_ptr = shots;

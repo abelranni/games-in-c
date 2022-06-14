@@ -24,5 +24,5 @@
 
 #define BALL_RADIUS         ( BALL_D / 2 )
 #define BRICKS_IN_ROW       ( BUFFER_W / BRICK_W )
-
+#define BRICKS_ROWS         3
 #define BALL_SPEED          4

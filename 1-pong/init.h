@@ -1,12 +1,13 @@
 
 void keyboard_update(ALLEGRO_EVENT *event);
 void initialize_objects();
+int between(int lo, int hi);
 
 void initialize_objects()
 {
 
-    ball.pos.x = BUFFER_W / 2;
-    ball.pos.y = BUFFER_H / 2;
+    ball.pos.x = between(0,BUFFER_W);
+    ball.pos.y = between(0,BUFFER_H / 2);
     ball.pos.dx = BALL_SPEED;
     ball.pos.dy = BALL_SPEED * 2;
     ball.vx = ball.pos.dx;
@@ -23,15 +24,18 @@ void initialize_objects()
     ship.height = SHIP_HEIGHT;
     ship.lives = lives;
 
-    for (int i = 0; i < BRICKS_IN_ROW; i++)
+    for (int row = 0; row < BRICKS_ROWS; row++) 
     {
-        brick[i].pos.x = i * (BUFFER_W / BRICKS_IN_ROW);
-        brick[i].pos.y = 0;
-        brick[i].pos.dx = 0;
-        brick[i].pos.dy = 0;
-        brick[i].width = BRICK_W;
-        brick[i].height = BRICK_H;
-        brick[i].enabled = true;
+        for (int i = 0; i < BRICKS_IN_ROW; i++)
+        {
+            brick[row][i].pos.x = i * (BUFFER_W / BRICKS_IN_ROW);
+            brick[row][i].pos.y = row * BRICK_H;
+            brick[row][i].pos.dx = 0;
+            brick[row][i].pos.dy = 0;
+            brick[row][i].width = BRICK_W;
+            brick[row][i].height = BRICK_H;
+            brick[row][i].enabled = true;
+        }
     }
 
     for (int i = 0; i < 10; i++)

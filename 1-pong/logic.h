@@ -19,8 +19,10 @@ void test_ball_collision(BOUNCER *ball_ptr, SHIP *ship_ptr)
         audio_play_explode(0);
         // ball_ptr->pos.x -= (ball_ptr->pos.y - (BUFFER_H - (BALL_RADIUS * 2)));
         // ball_ptr->vy *= -1;
-        ball_ptr->pos.x = BUFFER_W / 2;
-        ball_ptr->pos.y = BUFFER_H / 2;
+        ball_ptr->pos.x = between(0,BUFFER_W);
+        ball_ptr->pos.y = between(0,BUFFER_H / 2);
+
+
         ship_ptr->lives--;
         frames = 0;
         return;
@@ -83,13 +85,16 @@ int check_collision(BOUNCER *ball_ptr, SHIP *ship_ptr)
 //
 void check_all_bricks(BOUNCER *ball_ptr, SHIP *brick_ptr)
 {
-    for (int i = 0; i < 10; i++)
+    for (int row = 0; row < BRICKS_ROWS; row++)
     {
-        if (brick_ptr[i].enabled)
+        for (int i = 0; i < BRICKS_IN_ROW; i++)
         {
-            if (check_brick_collision(ball_ptr, &(brick_ptr[i])))
+            if (brick_ptr[(row*BRICKS_IN_ROW)+i].enabled)
             {
-                brick_ptr[i].enabled = false;
+                if (check_brick_collision(ball_ptr, &(brick_ptr[(row*BRICKS_IN_ROW)+i])))
+                {
+                    brick_ptr[(row*BRICKS_IN_ROW)+i].enabled = false;
+                }
             }
         }
     }

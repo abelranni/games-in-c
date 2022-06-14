@@ -79,12 +79,15 @@ void ball_update(BOUNCER *ball_ptr)
 //
 void brick_draw(SHIP *brick_ptr)
 {
-    for (int i = 0; i < BRICKS_IN_ROW; i++)
+    for (int row = 0; row < BRICKS_ROWS; row++)
     {
-        if (brick_ptr[i].enabled)
+        for (int i = 0; i < BRICKS_IN_ROW; i++)
         {
-            al_draw_bitmap(sprites.bricks_img[i%4], brick_ptr[i].pos.x, brick_ptr[i].pos.y, 0);
+            if (brick_ptr[(row*BRICKS_IN_ROW)+i].enabled)
+            {
+                al_draw_bitmap(sprites.bricks_img[i%4], brick_ptr[(row*BRICKS_IN_ROW)+i].pos.x, brick_ptr[(row*BRICKS_IN_ROW)+i].pos.y, 0);
 
+            }
         }
     }
 }
