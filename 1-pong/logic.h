@@ -66,8 +66,6 @@ void test_ball_collision(BOUNCER *ball_ptr, SHIP *ship_ptr)
     }
 }    
 
-
-
 int check_collision(BOUNCER *ball_ptr, SHIP *ship_ptr)
 {
     if ( ball_ptr->pos.x > ship_ptr->pos.x && 

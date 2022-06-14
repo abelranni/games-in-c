@@ -97,7 +97,7 @@ void shots_update(BOUNCER *shots_ptr, SHIP *ship_ptr)
         if (shots_ptr[i].enabled)
         {
             shots_ptr[i].pos.y += shots_ptr[i].vy;
-            if (shots_ptr[i].pos.y < BALL_D)
+            if (shots_ptr[i].pos.y < BRICK_H)
             {
                 shots_ptr[i].enabled = false;
             }
@@ -110,7 +110,7 @@ void shots_update(BOUNCER *shots_ptr, SHIP *ship_ptr)
         {
             if (!shots_ptr[i].enabled)
             {
-                shots_ptr[i].pos.x = ship_ptr->pos.x + SHIP_WIDTH / 2;
+                shots_ptr[i].pos.x = ship_ptr->pos.x + (SHIP_WIDTH / 2) - (BALL_D / 2);
                 shots_ptr[i].pos.y = (BUFFER_H - BALL_D - BRICK_H);
                 shots_ptr[i].pos.dx = 0;
                 shots_ptr[i].vy = -5;
